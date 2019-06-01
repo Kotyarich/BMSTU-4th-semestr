@@ -6,8 +6,7 @@
 
 namespace objects {
 
-class Camera: public Object
-{
+class Camera: public Object {
 public:
     Camera(std::string name);
 
@@ -20,8 +19,8 @@ public:
     double getZAngle() const;
     void setZAngle(double _z_angle);
 
-    bool isVisible() const override { return false; }
-    void transform(const math::Matrix &matrix) override;
+    void transform(const std::shared_ptr<Matrix> matrix) override;
+    void accept(std::shared_ptr<Visitor> visitor) override;
 private:
     math::Point _position;
     double _x_angle;

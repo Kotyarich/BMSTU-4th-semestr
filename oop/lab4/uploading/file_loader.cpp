@@ -23,7 +23,7 @@ void FileLoader::close() {
     }
 }
 
-void FileLoader::readModelInfo(objects::Model &model) {
+std::pair<size_t, size_t> FileLoader::readModelInfo() {
     if (!_file.is_open()) {
         throw exceptions::FileOpenException();
     }
@@ -32,28 +32,7 @@ void FileLoader::readModelInfo(objects::Model &model) {
     size_t edges = 0;
     _file >> points >> edges;
 
-    model.setPointsNumber(points);
-    model.setEdgesNumber(edges);
-}
-
-void FileLoader::readModel(objects::Model &model) {
-    if (!_file.is_open()) {
-        throw exceptions::FileOpenException();
-    }
-    std::vector<Point> points(model.getPointsNumber());
-    std::vector<std::pair<size_t, size_t>> edges(model.getEdgesNumber());
-
-    for (size_t i = 0; i < model.getPointsNumber(); i++) {
-        points[i] = readPoint();
-    }
-
-    for (size_t i = 0; i < model.getEdgesNumber(); i++) {
-        edges[i] = readEdgeInfo();
-    }
-
-    for (auto &edge: edges) {
-        model.addEdge(points[edge.first], points[edge.second]);
-    }
+    return std::make_pair(points, edges);
 }
 
 Point FileLoader::readPoint() {

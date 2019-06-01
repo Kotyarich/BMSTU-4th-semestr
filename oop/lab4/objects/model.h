@@ -3,31 +3,25 @@
 
 #include <vector>
 #include "object.h"
+#include "mesh/mesh.h"
 #include "../math/point.h"
 
 namespace objects {
 
 using math::Point;
 
-class Model: public Object
-{
+class Model: public Object {
 public:
     Model(std::string);
 
-    void addEdge(Point p1, Point p2);
-    bool isVisible() const override { return true; }
-    void transform(const math::Matrix &matrix) override;
-
-    const std::vector<std::pair<Point, Point>> getEdges() const;
-    void setPointsNumber(size_t n) { _points_number = n; }
-    void setEdgesNumber(size_t n) { _edges_number = n; }
-    size_t getPointsNumber() const { return _points_number; }
-    size_t getEdgesNumber() const {return _edges_number; }
+    void addPoint(Point &p);
+    void addEdge(size_t first, size_t second);
+    void transform(const std::shared_ptr<Matrix> matrix) override;
+    void accept(std::shared_ptr<Visitor> visitor) override;
+    std::shared_ptr<Mesh> getMesh() { return _mesh; }
 
 private:
-    size_t _points_number;
-    size_t _edges_number;
-    std::vector<std::pair<Point, Point>> _edges;
+    std::shared_ptr<Mesh> _mesh;
 };
 
 } // namespace objects

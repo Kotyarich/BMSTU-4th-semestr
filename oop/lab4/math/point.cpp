@@ -32,12 +32,12 @@ void Point::setZ(double z) {
     _z = z;
 }
 
-void Point::multMatrix(const Matrix &matrix) {
+void Point::transform(const std::shared_ptr<Matrix> matrix) {
     std::vector<double> result(4);
     std::vector<double> data = {_x, _y, _z, 1.};
     for (size_t i = 0; i < 4; i++) {
         for (size_t j = 0; j < 4; j++) {
-            result[i] += data[j] * matrix.get(i, j);
+            result[i] += data[j] * matrix->get(i, j);
         }
     }
 

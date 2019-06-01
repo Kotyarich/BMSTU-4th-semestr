@@ -16,9 +16,16 @@ std::vector<std::shared_ptr<Object> > Composite::getObjects() {
     return _objects;
 }
 
-void Composite::transform(const math::Matrix &matrix) {
+void Composite::transform(const std::shared_ptr<math::Matrix> matrix) {
     for (auto &obj: _objects) {
         obj->transform(matrix);
+    }
+}
+
+void Composite::accept(std::shared_ptr<Visitor> visitor) {
+    visitor->visit(*this);
+    for (auto &obj: _objects) {
+        obj->accept(visitor);
     }
 }
 

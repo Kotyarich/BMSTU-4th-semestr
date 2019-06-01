@@ -1,24 +1,24 @@
-#ifndef SCALE_COMMAND_H
-#define SCALE_COMMAND_H
+#ifndef MOVE_CAMERA_COMMAND_H
+#define MOVE_CAMERA_COMMAND_H
 
 #include "basecommand.h"
+#include "../math/point.h"
 #include "../intermediary/intermediary.h"
 
 namespace commands {
 
 using intermediary::Intermediary;
+using math::Point;
 
-class ScaleCommand: public BaseCommand {
+class MoveCameraCommand: public BaseCommand {
 public:
-    ScaleCommand(std::string object_name, double x, double y, double z);
+    MoveCameraCommand(std::string object_name, Point move);
     void execute(std::shared_ptr<Intermediary> intermediary) override;
 private:
     std::string _object_name;
-    double _x;
-    double _y;
-    double _z;
+    Point _move;
 };
 
 } // namespace commands
 
-#endif // SCALE_COMMAND_H
+#endif // MOVE_CAMERA_COMMAND_H

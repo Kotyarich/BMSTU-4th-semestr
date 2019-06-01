@@ -27,14 +27,14 @@ CONFIG += c++11
 SOURCES += \
         commands/add_camera_command.cpp \
         commands/add_model_command.cpp \
-        commands/move_command.cpp \
+        commands/move_camera_command.cpp \
         commands/pitch_camera_command.cpp \
-        commands/remove_object_command.cpp \
+        commands/remove_camera_command.cpp \
+        commands/remove_model_command.cpp \
         commands/render_command.cpp \
         commands/roll_camera_command.cpp \
-        commands/rotate_commands.cpp \
-        commands/scale_command.cpp \
         commands/set_camera.cpp \
+        commands/transform_model_command.cpp \
         commands/yaw_camera_command.cpp \
         drawlabel.cpp \
         facade/viewer_facade.cpp \
@@ -42,54 +42,67 @@ SOURCES += \
         main.cpp \
         math/matrix.cpp \
         math/point.cpp \
+        math/transform_matrix.cpp \
         objects/camera.cpp \
         objects/composite.cpp \
+        objects/mesh/mesh.cpp \
         objects/model.cpp \
         render/qt_drawer.cpp \
         render/renderer.cpp \
         scene/scene.cpp \
-        transformations/camerarotator.cpp \
+        scene/scene_manager.cpp \
+        transformations/camera_manager.cpp \
         transformations/transformer.cpp \
         uploading/file_loader.cpp \
+        uploading/model_builder.cpp \
         uploading/model_loader.cpp \
         widget.cpp
 
 HEADERS += \
+        base_manager.h \
         commands/add_camera_command.h \
         commands/add_model_command.h \
         commands/basecommand.h \
-        commands/move_command.h \
+        commands/move_camera_command.h \
         commands/pitch_camera_command.h \
-        commands/remove_object_command.h \
+        commands/remove_camera_command.h \
+        commands/remove_model_command.h \
         commands/render_command.h \
         commands/roll_camera_command.h \
-        commands/rotate_commands.h \
-        commands/scale_command.h \
         commands/set_camera.h \
+        commands/transform_model_command.h \
         commands/yaw_camera_command.h \
         drawlabel.h \
         exceptions/base_viewer_exeption.h \
         exceptions/camera_lack_exception.h \
+        exceptions/drawer_exception.h \
         exceptions/file_open_exception.h \
+        exceptions/model_build_exception.h \
         exceptions/object_search_exception.h \
         exceptions/object_type_exception.h \
         facade/viewer_facade.h \
         intermediary/intermediary.h \
         math/matrix.h \
         math/point.h \
+        math/transform_matrix.h \
         objects/camera.h \
         objects/composite.h \
+        objects/mesh/mesh.h \
         objects/model.h \
         objects/object.h \
         render/base_drawer.h \
         render/qt_drawer.h \
         render/renderer.h \
         scene/scene.h \
-        transformations/camerarotator.h \
+        scene/scene_manager.h \
+        transformations/camera_manager.h \
         transformations/transformer.h \
-        uploading/base_loader.h \
+        uploading/abs_model_loader.h \
+        uploading/base_loader_imp.h \
         uploading/file_loader.h \
+        uploading/model_builder.h \
         uploading/model_loader.h \
+        visitor/visitor.h \
         widget.h
 
 FORMS += \

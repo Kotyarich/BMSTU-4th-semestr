@@ -2,7 +2,7 @@
 
 namespace objects {
 
-Camera::Camera(std::string name): Object(name), _z_angle(0), _y_angle(0), _x_angle(0) {
+Camera::Camera(std::string name): Object(name), _x_angle(0), _y_angle(0), _z_angle(0) {
     _position = math::Point(0, 0, 300);
 }
 
@@ -32,8 +32,12 @@ void Camera::setZAngle(double _z_angle) {
     Camera::_z_angle = _z_angle;
 }
 
-void Camera::transform(const math::Matrix &matrix) {
-    _position.multMatrix(matrix);
+void Camera::transform(const std::shared_ptr<math::Matrix> matrix) {
+    _position.transform(matrix);
+}
+
+void Camera::accept(std::shared_ptr<Visitor> visitor) {
+    visitor->visit(*this);
 }
 
 } // namespace objects

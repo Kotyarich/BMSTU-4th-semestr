@@ -2,21 +2,23 @@
 
 namespace objects {
 
-Model::Model(std::string name): Object(name), _points_number(0), _edges_number(0) {}
+Model::Model(std::string name): Object(name), _mesh(new Mesh) {}
 
-void Model::addEdge(Point p1, Point p2) {
-    _edges.emplace_back(p1, p2);
+void Model::addPoint(math::Point &p) {
+    _mesh->addPoint(p);
 }
 
-void Model::transform(const math::Matrix &matrix) {
-    for (auto &edge: _edges) {
-        edge.first.multMatrix(matrix);
-        edge.second.multMatrix(matrix);
-    }
+void Model::addEdge(size_t first, size_t second) {
+    _mesh->addEdge(first, second);
 }
 
-const std::vector<std::pair<Point, Point>> Model::getEdges() const {
-    return _edges;
+void Model::transform(const std::shared_ptr<math::Matrix> matrix) {
+    _mesh->transform(matrix);
 }
+
+void Model::accept(std::shared_ptr<Visitor> visitor) {
+    visitor->visit(*this);
+}
+
 
 } // namespace objects

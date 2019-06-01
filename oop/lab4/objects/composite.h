@@ -2,13 +2,11 @@
 #define COMPOSITE_H
 
 #include <vector>
-#include <memory>
 #include "object.h"
 
 namespace objects {
 
-class Composite: public Object
-{
+class Composite: public Object {
 public:
     Composite() = default;
 
@@ -18,8 +16,8 @@ public:
 
     std::vector<std::shared_ptr<Object>> getObjects();
 
-    bool isVisible() const override { return false; }
-    void transform(const math::Matrix &matrix) override;
+    void transform(const std::shared_ptr<Matrix> matrix) override;
+    void accept(std::shared_ptr<Visitor> visitor) override;
 private:
     std::vector<std::shared_ptr<Object>> _objects;
 };

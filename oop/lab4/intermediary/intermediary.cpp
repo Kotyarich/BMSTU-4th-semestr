@@ -2,107 +2,54 @@
 
 namespace intermediary {
 
-Intermediary::Intermediary(): _loader(new uploading::FileLoader), _current_camera(nullptr) {}
+Intermediary::Intermediary():
+    _renderer(new render::Renderer),
+    _loader(new uploading::FileLoader) {}
 
-void Intermediary::addModel(std::string file_name, std::string name) {
-    auto model = new objects::Model(name);
-    _loader.loadModel(*model, file_name);
-    _scene.addModel(std::shared_ptr<objects::Model>(model));
+void Intermediary::addModel(std::string file_name, std::string name) {    
+    std::shared_ptr<Model> model = _loader.loadModel(file_name, name);
+    _scene_manager.getScene()->addModel(std::shared_ptr<objects::Model>(model));
 }
 
 void Intermediary::addCamera(std::string name) {
     auto camera = new objects::Camera(name);
-    _scene.addCamera(std::shared_ptr<objects::Camera>(camera));
+    _scene_manager.getScene()->addCamera(std::shared_ptr<objects::Camera>(camera));
 }
 
 void Intermediary::setCamera(std::string cam_name) {
-    _scene.setCamera(cam_name);
+    _scene_manager.setCurrentCamera(cam_name);
 }
 
-void Intermediary::removeObject(std::string obj_name) {
-    _scene.removeObject(_scene.getObjectByName(obj_name));
+void Intermediary::removeCamera(std::string cam_name) {
+    _scene_manager.getScene()->removeCamera(cam_name);
 }
 
-void Intermediary::moveObject(std::string obj_name, int x, int y, int z) {
-    auto obj = _scene.getObjectByName(obj_name);
-    if (obj != nullptr) {
-        _transformer.moveObject(obj, x, y, z);
-    }
+void Intermediary::removeModel(std::string model_name) {
+    auto scene = _scene_manager.getScene();
+    scene->removeModel(scene->getObject(model_name));
 }
 
-void Intermediary::scaleObject(std::string obj_name, double x, double y, double z) {
-    auto obj = _scene.getObjectByName(obj_name);
-    if (obj != nullptr) {
-        _transformer.scaleObject(obj, x, y, z);
-    }
+void Intermediary::transformCamera(std::string cam_name, math::Point &move, math::Point &rotate) {
+    auto camera = _scene_manager.getScene()->getCamera(cam_name);
+    _transformer.moveObject(camera, move.x(), move.y(), move.z());
+    _cam_manager.roll(camera, rotate.x());
+    _cam_manager.pitch(camera, rotate.y());
+    _cam_manager.yaw(camera, rotate.z());
 }
 
-void Intermediary::rotateObjectX(std::string obj_name, double angle) {
-    auto obj = _scene.getObjectByName(obj_name);
-    if (obj != nullptr) {
-        _transformer.rotateObjectX(obj, angle);
-    }
-}
-
-void Intermediary::rotateObjectY(std::string obj_name, double angle) {
-    auto obj = _scene.getObjectByName(obj_name);
-    if (obj != nullptr) {
-        _transformer.rotateObjectY(obj, angle);
-    }
-}
-
-void Intermediary::rotateObjectZ(std::string obj_name, double angle) {
-    auto obj = _scene.getObjectByName(obj_name);
-    if (obj != nullptr) {
-        _transformer.rotateObjectZ(obj, angle);
-    }
-}
-
-void Intermediary::yawCamera(std::string cam_name, double angle) {
-    auto obj = _scene.getObjectByName(cam_name);
-    if (obj->isVisible()) {
-        throw exceptions::ObjectTypeException();
-    }
-
-    Camera *camera = dynamic_cast<Camera*>(obj.get());
-    _cam_rotator.yaw(*camera, angle);
-}
-
-void Intermediary::rollCamera(std::string cam_name, double angle) {
-    auto obj = _scene.getObjectByName(cam_name);
-    if (obj->isVisible()) {
-        throw exceptions::ObjectTypeException();
-    }
-
-    Camera *camera = dynamic_cast<Camera*>(obj.get());
-    _cam_rotator.roll(*camera, angle);
-}
-
-void Intermediary::pitchCamera(std::string cam_name, double angle) {
-    auto obj = _scene.getObjectByName(cam_name);
-    if (obj->isVisible()) {
-        throw exceptions::ObjectTypeException();
-    }
-
-    Camera *camera = dynamic_cast<Camera*>(obj.get());
-    _cam_rotator.roll(*camera, angle);
+void Intermediary::transformModel(std::string model_name, math::Point &move, math::Point &scale, math::Point &rotate) {
+    auto obj = _scene_manager.getScene()->getObject(model_name);
+    _transformer.moveObject(obj, move.x(), move.y(), move.z());
+    _transformer.scaleObject(obj, scale.x(), scale.y(), scale.z());
+    _transformer.rotateObjectX(obj, rotate.x());
+    _transformer.rotateObjectY(obj, rotate.y());
+    _transformer.rotateObjectZ(obj, rotate.z());
 }
 
 void Intermediary::draw(std::shared_ptr<BaseDrawer> drawer) {
-    auto objects = _scene.getObjects();
-    auto camera = _scene.getCurrentCamera();
-
-    for (auto &obj: objects) {
-        if (obj->isVisible()) {
-            Model model = *(dynamic_cast<Model*>(obj.get()));
-            auto edges = model.getEdges();
-            for (auto &edge: edges) {
-                _transformer.projectPoint(edge.first, *camera);
-                _transformer.projectPoint(edge.second, *camera);
-            }
-            _renderer.render(edges, drawer);
-        }
-    }
+    _renderer->setDrawer(drawer);
+    _renderer->setCamera(_scene_manager.getCurrentCamera());
+    _scene_manager.getScene()->getModelsComposite()->accept(_renderer);
 }
 
 } // namespace intermediary

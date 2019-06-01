@@ -2,21 +2,23 @@
 #define MOVE_COMMAND_H
 
 #include "basecommand.h"
+#include "../math/point.h"
 #include "../intermediary/intermediary.h"
 
 namespace commands {
 
 using intermediary::Intermediary;
+using math::Point;
 
-class MoveCommand: public BaseCommand {
+class TransformModelCommand: public BaseCommand {
 public:
-    MoveCommand(std::string object_name, int x, int y, int z);
+    TransformModelCommand(std::string object_name, Point move, Point scale, Point rotate);
     void execute(std::shared_ptr<Intermediary> intermediary) override;
 private:
     std::string _object_name;
-    int _x;
-    int _y;
-    int _z;
+    Point _move;
+    Point _scale;
+    Point _rotate;
 };
 
 } // namespace commands

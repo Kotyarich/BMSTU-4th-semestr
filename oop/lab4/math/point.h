@@ -1,6 +1,7 @@
 #ifndef POINT_H
 #define POINT_H
 
+#include <memory>
 #include "matrix.h"
 
 namespace math {
@@ -18,7 +19,7 @@ public:
     void setY(double y);
     void setZ(double z);
 
-    void multMatrix(const Matrix &matrix);
+    void transform(const std::shared_ptr<math::Matrix> matrix);
 private:
     double _x;
     double _y;

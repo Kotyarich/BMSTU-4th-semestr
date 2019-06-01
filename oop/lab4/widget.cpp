@@ -30,8 +30,16 @@ void Widget::moveObject() {
     int y = ui->spinBox_2->value();
     int z = ui->spinBox_3->value();
 
-    commands::MoveCommand command(obj_name, x, y, z);
-    _facade->execCommand(&command);
+    Point moving(x, y, z);
+    if (obj_name[0] == 'm') {
+        Point rotateing(0, 0, 0);
+        Point scale(1, 1, 1);
+        commands::TransformModelCommand command(obj_name, moving, scale, rotateing);
+        _facade->execCommand(&command);
+    } else {
+        commands::MoveCameraCommand command(obj_name, moving);
+        _facade->execCommand(&command);
+    }
 
     render();
 }
@@ -41,11 +49,19 @@ void Widget::scaleObject() {
         return;
     }
     std::string obj_name = ui->comboBox->currentText().toStdString();
+    if (obj_name[0] == 'c') {
+        QMessageBox::critical(nullptr, "Error", "Couldn't scal camera");
+        return;
+    }
+
     double x = ui->doubleSpinBox_7->value();
     double y = ui->doubleSpinBox_6->value();
     double z = ui->doubleSpinBox_5->value();
 
-    commands::ScaleCommand command(obj_name, x, y, z);
+    Point moving(0, 0, 0);
+    Point rotateing(0, 0, 0);
+    Point scale(x, y, z);
+    commands::TransformModelCommand command(obj_name, moving, scale, rotateing);
     _facade->execCommand(&command);
 
     render();
@@ -58,8 +74,16 @@ void Widget::rotateObjectX() {
     std::string obj_name = ui->comboBox->currentText().toStdString();
     double angle = ui->doubleSpinBox_4->value();
 
-    commands::RotateXCommand command(obj_name, angle);
-    _facade->execCommand(&command);
+    if (obj_name[0] == 'c') {
+        commands::RollCameraCommand command(obj_name, angle);
+        _facade->execCommand(&command);
+    } else {
+        Point moving(0, 0, 0);
+        Point rotateing(angle, 0, 0);
+        Point scale(1, 1, 1);
+        commands::TransformModelCommand command(obj_name, moving, scale, rotateing);
+        _facade->execCommand(&command);
+    }
 
     render();
 }
@@ -70,9 +94,16 @@ void Widget::rotateObjectY() {
     }
     std::string obj_name = ui->comboBox->currentText().toStdString();
     double angle = ui->doubleSpinBox_4->value();
-
-    commands::RotateYCommand command(obj_name, angle);
-    _facade->execCommand(&command);
+    if (obj_name[0] == 'c') {
+        commands::PitchCameraCommand command(obj_name, angle);
+        _facade->execCommand(&command);
+    } else {
+        Point moving(0, 0, 0);
+        Point rotateing(0, angle, 0);
+        Point scale(1, 1, 1);
+        commands::TransformModelCommand command(obj_name, moving, scale, rotateing);
+        _facade->execCommand(&command);
+    }
 
     render();
 }
@@ -83,53 +114,18 @@ void Widget::rotateObjectZ() {
     }
     std::string obj_name = ui->comboBox->currentText().toStdString();
     double angle = ui->doubleSpinBox_4->value();
-
-    commands::RotateZCommand command(obj_name, angle);
-    _facade->execCommand(&command);
-
-    render();
-}
-
-void Widget::rollCamera() {
-    std::string obj_name = ui->comboBox->currentText().toStdString();
     if (obj_name[0] == 'c') {
-        double angle = ui->doubleSpinBox_3->value();
-
-        commands::RollCameraCommand command(obj_name, angle);
-        _facade->execCommand(&command);
-
-        render();
-    } else {
-        QMessageBox::critical(nullptr, "Error", "You should choose camera");
-    }
-}
-
-void Widget::yawCamera() {
-    std::string obj_name = ui->comboBox->currentText().toStdString();
-    if (obj_name[0] == 'c') {
-        double angle = ui->doubleSpinBox_2->value();
-
         commands::YawCameraCommand command(obj_name, angle);
         _facade->execCommand(&command);
-
-        render();
     } else {
-        QMessageBox::critical(nullptr, "Error", "You should choose camera");
-    }
-}
-
-void Widget::pitchCamera() {
-    std::string obj_name = ui->comboBox->currentText().toStdString();
-    if (obj_name[0] == 'c') {
-        double angle = ui->doubleSpinBox->value();
-
-        commands::PitchCameraCommand command(obj_name, angle);
+        Point moving(0, 0, 0);
+        Point rotateing(0, 0, angle);
+        Point scale(1, 1, 1);
+        commands::TransformModelCommand command(obj_name, moving, scale, rotateing);
         _facade->execCommand(&command);
-
-        render();
-    } else {
-        QMessageBox::critical(nullptr, "Error", "You should choose camera");
     }
+
+    render();
 }
 
 void Widget::addModel() {
@@ -167,9 +163,13 @@ void Widget::removeObject() {
         return;
     }
     std::string obj_name = ui->comboBox->currentText().toStdString();
-
-    commands::RemoveObjectCommand command(obj_name);
-    _facade->execCommand(&command);
+    if (obj_name[0] == 'm') {
+        commands::RemoveModelCommand command(obj_name);
+        _facade->execCommand(&command);
+    } else {
+        commands::RemoveCameraCommand command(obj_name);
+        _facade->execCommand(&command);
+    }
 
     render();
 }

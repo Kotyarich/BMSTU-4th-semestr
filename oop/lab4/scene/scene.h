@@ -1,6 +1,7 @@
 #ifndef LAB4_SCENE_H
 #define LAB4_SCENE_H
 
+#include <unordered_map>
 #include <memory>
 #include "../exceptions/camera_lack_exception.h"
 #include "../exceptions/object_search_exception.h"
@@ -13,20 +14,21 @@ namespace scene {
 using namespace objects;
 
 class Scene {
- public:
+public:
     Scene();
 
     void addModel(std::shared_ptr<Model> obj);
-    void addCamera(std::shared_ptr<Camera> obj);
-    void setCamera(std::string cam_name);
-    Camera *getCurrentCamera();
-    void removeObject(std::shared_ptr<Object> obj);
-    std::shared_ptr<Object> getObjectByName(std::string obj_name);
+    void addCamera(std::shared_ptr<Camera> obj);    
+    void removeModel(std::shared_ptr<Object> obj);
+    void removeCamera(std::string cam_name);
 
+    std::shared_ptr<Composite> getModelsComposite();
+    std::shared_ptr<Camera> getCamera(std::string cam_name);
+    std::shared_ptr<Object> getObject(std::string model_name);
     std::vector<std::shared_ptr<Object>> getObjects();
- private:
-    Composite _objects;
-    Camera *_current_camera;
+private:
+    std::shared_ptr<Composite> _objects;
+    std::unordered_map<std::string, std::shared_ptr<Camera>> _cameras;
 };
 
 } // namespace scene
